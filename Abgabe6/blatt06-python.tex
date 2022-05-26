@@ -1,0 +1,904 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{blatt06-python}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{datenstrukturen-und-algorithmen}{%
+\section{Datenstrukturen und
+Algorithmen}\label{datenstrukturen-und-algorithmen}}
+
+\hypertarget{praktische-aufgabe-3}{%
+\subsection{Praktische Aufgabe 3}\label{praktische-aufgabe-3}}
+
+In dieser praktischen Aufgabe werden Sie sich mit binären Suchbäumen
+(BST = binary search tree) beschäftigen. Zunächst implementieren Sie die
+aus der Vorlesung bekannte Funktion \texttt{insert()}, die jetzt neben
+einem Schlüssel auch einen Wert im Binärbaum (BT = binary tree)
+abspeichert. Danach überprüfen Sie, ob ein gegebener BT auch ein BST ist
+und falls nicht, implementieren Sie einen einfachen Algorithmus, um
+jeden beliebiegen BT in einen BST mit einer vorgegebenen Baumstruktur zu
+überführen.
+
+Die Abgaben werden mit der \texttt{nbgrader} Erweiterung korrigiert. Das
+System erwartet, dass der Code zum Lösen der Aufgaben nach der
+\texttt{\#YOUR\ CODE\ HERE} Anweisung kommt. Außerdem darf die
+Zellenreihenfolge nicht geändert werden. Damit Sie selbst Ihre
+Lösungsvorschläge validieren können, werden Ihnen Unittests zur
+Verfügung gestellt. Beachten Sie, dass diese Tests keine Garantie sind
+für das Erreichen der vollen Punktzahl, da Sie nur einen Teil der
+Funktionalität überprüfen.
+
+Wichtig: Füllen Sie zunächst die erste Zelle mit
+\texttt{\#YOUR\ ANSWER\ HERE} unter dem Titel \texttt{Abgabeteam} mit
+ihren Namen und Matrikelnummern vollständig aus. Dies ermöglicht uns
+auch bei technischen Problemen die Abgaben eindeutig zuordnen zu können.
+Ändern Sie außerdem nicht den Namen der Datei.
+
+Zusammenfassung der Aufgaben:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Binäre Suchbäume} - insgesamt: 20 Punkte
+
+  \begin{itemize}
+  \tightlist
+  \item
+    insert() - 4P.
+  \item
+    is\_bin\_search\_tree() - 6P.
+  \item
+    bin\_tree\_2\_list() - 3P.
+  \item
+    list\_2\_bin\_tree() - 3P.
+  \item
+    bin\_tree\_2\_bin\_search\_tree() - 4P.
+  \end{itemize}
+\end{enumerate}
+
+    \hypertarget{abgabeteam}{%
+\subsection{Abgabeteam}\label{abgabeteam}}
+
+Bitte füllen Sie die untenstehende Zelle aus mit
+
+Nummer des Tutoriums,
+
+Voranme Nachname Matrikelnummer 1,
+
+Vorname Nachname Matrikelnummer 2,
+
+(Vorname Nachname Matrikelnummer 3)
+
+    23,
+
+Mohammed Al-Laktah 419664,
+
+Salah Atallah 414867,
+
+    \hypertarget{module-importieren}{%
+\subsection{Module importieren}\label{module-importieren}}
+
+Als erstes importieren wir die verwendeten Module. Sie dürfen keine
+weiteren Python Module importieren oder verwenden, als die hier
+spezifizierten Module.
+
+Falls Sie eine Entwicklungsumgebung, wie Google Colab oder Deepnote
+verwendeen und bestimmte Module nicht verfügbar sind, kommentieren Sie
+die erste Zeile aus, um die Module in der Laufzeitumgebung temporär zu
+installieren.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+ch}{\PYZsh{}!pip install nose}
+
+\PY{k+kn}{from} \PY{n+nn}{nose}\PY{n+nn}{.}\PY{n+nn}{tools} \PY{k+kn}{import} \PY{n}{assert\PYZus{}equal}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{binuxe4re-suchbuxe4ume}{%
+\section{Binäre Suchbäume}\label{binuxe4re-suchbuxe4ume}}
+
+Im folgenden werden Sie einen BST implementieren, der sowohl ein
+Attribut \texttt{key}, als auch \texttt{value} besitzt. Dabei wird die
+Sortierung der Blätter über den Schlüssel \texttt{key} bestimmt, während
+das eigentliche Element in \texttt{value} gespeichert wird. Dadurch
+können wir verschiedene Elemente nach einem beliebigen Schlüssel im Baum
+speichern. Der unten stehende Code definiert die Struktur von einem
+Node. Die Funktion \texttt{print\_tree} gibt jeweils den BT als einen
+formattierten Output aus. Bitte beachten Sie, dass wir in dieser
+Implementierung keinen Parent-Pointer nutzen. Alle Aufgaben lassen sich
+auch ohne diese Referenz effizient lösen.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class} \PY{n+nc}{Node}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{left}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{k+kc}{None}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{key} \PY{o}{=} \PY{n}{key}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{value} \PY{o}{=} \PY{n}{value}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{left} \PY{o}{=} \PY{n}{left}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{right} \PY{o}{=} \PY{n}{right}
+        
+
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}repr\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{(}\PY{l+s+si}{\PYZob{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{left}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, }\PY{l+s+si}{\PYZob{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{key}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{|}\PY{l+s+si}{\PYZob{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{value}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, }\PY{l+s+si}{\PYZob{}}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{right}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}
+
+
+\PY{k}{def} \PY{n+nf}{print\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{,} \PY{n}{level}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n}{node} \PY{o+ow}{is} \PY{o+ow}{not} \PY{k+kc}{None}\PY{p}{:}
+        \PY{n}{print\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{,} \PY{n}{level} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}} \PY{o}{*} \PY{l+m+mi}{8} \PY{o}{*} \PY{n}{level}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZhy{}\PYZgt{}  }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{str}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{key}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{|}\PY{l+s+si}{\PYZob{}}\PY{n+nb}{str}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{value}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{print\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{,} \PY{n}{level} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Valid BST:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{valid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{asd}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{k+kc}{None}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{vwa}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{234}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cde}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{print\PYZus{}tree}\PY{p}{(}\PY{n}{valid\PYZus{}bst}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{valid\PYZus{}bst}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Invalid BST:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{invalid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{kve}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{esi}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{agg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dnf}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{print\PYZus{}tree}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Valid BST:
+                        ->  8|cde
+                ->  7|abv
+        ->  6|234
+                ->  5|abc
+->  4|421
+                        ->  3|vwa
+                ->  3|None
+        ->  2|123
+                ->  1|asd
+(((None, 1|asd, None), 2|123, (None, 3|None, (None, 3|vwa, None))), 4|421,
+((None, 5|abc, None), 6|234, (None, 7|abv, (None, 8|cde, None))))
+
+------------------
+
+Invalid BST:
+                ->  4|dnf
+                        ->  2|123
+        ->  9|agg
+->  1|421
+        ->  2|kve
+                ->  4|abc
+                        ->  0|esi
+((((None, 0|esi, None), 4|abc, None), 2|kve, None), 1|421, (None, 9|agg, ((None,
+2|123, None), 4|dnf, None)))
+    \end{Verbatim}
+
+    \hypertarget{a-insert---4p.}{%
+\subsection{a) insert() - 4P.}\label{a-insert---4p.}}
+
+Implementieren Sie die Funktion \texttt{insert()}, die \texttt{node},
+\texttt{key}, sowie \texttt{value} als Parameter übergegeben bekommt.
+\texttt{node} ist hierbei der Elternknoten in den ein Element
+\texttt{value} entsprechend des Schlüssels \texttt{key} eingefügt wird.
+Der resultierende Baum soll dabei die Eigenschaften eines BST behalten.
+Orientieren sie sich an der aus der Vorlesung bekannten Funktion
+\texttt{insert()} und wandeln diese an den nötigen Stellen ab.
+
+Wenn zweimal der gleiche \texttt{key} eingefügt wird, dann wird einfach
+nur \texttt{value} ersetzt.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{insert}\PY{p}{(}\PY{n}{node}\PY{p}{,} \PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Insert a new node into a binary search tree based on `key` which holds `value`. \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{if} \PY{o+ow}{not} \PY{n}{node}\PY{p}{:}
+        \PY{n}{node} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}
+    \PY{k}{elif} \PY{n}{key} \PY{o}{\PYZgt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{:}
+        \PY{n}{node}\PY{o}{.}\PY{n}{right} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}
+    \PY{k}{elif} \PY{n}{key} \PY{o}{\PYZlt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{:}
+        \PY{n}{node}\PY{o}{.}\PY{n}{left} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}
+    \PY{k}{elif} \PY{n}{key} \PY{o}{\PYZgt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{:}
+           \PY{n}{insert}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{,} \PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}
+    \PY{k}{elif} \PY{n}{key} \PY{o}{\PYZlt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{:}
+           \PY{n}{insert}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{,} \PY{n}{key}\PY{p}{,} \PY{n}{value}\PY{p}{)}
+           
+    \PY{k}{return} \PY{n}{node}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{a-tests}{%
+\subsection{a) Tests}\label{a-tests}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{root} \PY{o}{=} \PY{k+kc}{None} 
+\PY{n}{root} \PY{o}{=} \PY{n}{insert}\PY{p}{(}\PY{n}{root}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{1177}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{root}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{(None, 3|1177, None)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{root} \PY{o}{=} \PY{k+kc}{None} 
+\PY{n}{root} \PY{o}{=} \PY{n}{insert}\PY{p}{(}\PY{n}{root}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Value}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{root} \PY{o}{=} \PY{n}{insert}\PY{p}{(}\PY{n}{root}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Value}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{root} \PY{o}{=} \PY{n}{insert}\PY{p}{(}\PY{n}{root}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Value}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{root}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{(None, 0|Value, (None, 1|Value, (None, 2|Value, None)))}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Die nächste Aufgabe besteht darin einen beliebigen BT in einen BST
+umzuwandeln. Dabei darf die Form des Baumes, also die Verzweigung, nicht
+verändert werden.
+
+Hierzu werden Sie zunächst eine Funktion implementieren, die überprüft
+ob ein gegebener BT auch ein BST ist. Danach implementieren Sie zwei
+Funktionen, die eine Inorder-Traversal über den BT durchführen und die
+Nodes in eine Liste schreiben bzw. Nodes aus einer Liste in einen BT
+überführen. Anschließend nutzen Sie diese Funktionen, sowie das
+Sortieren von Listen, um einen beliebigen BT in einen BST umzuwandeln
+und dabei die Verzweigungen des BT nicht zu verändern.
+
+Der zu implementierende Algorithmus besteht aus den folgenden Schritten:
+- Falls der BT ein BST ist: - mache nichts und geben den BT zurück -
+Sonst, führe die folgenden Schritte aus: - Konvertiere den BT mit
+Inorder-Traversal in eine Liste - Sortiere die Liste nach dem Schlüssel
+- Konvertiere die Liste mit Inoder-Traversal in einen BT
+
+    \hypertarget{b-is_bin_search_tree---6p.}{%
+\subsection{b) is\_bin\_search\_tree() -
+6P.}\label{b-is_bin_search_tree---6p.}}
+
+Implementieren Sie die Funktion \texttt{is\_bin\_search\_tree()}, die
+\texttt{node} als Parameter übergegeben bekommt und überprüft, ob es
+sich um den BT der durch \texttt{node} dargestellt wird, um einen BST
+handelt. Die Funktion soll \texttt{True} zurückgeben, falls ein BST
+übergegeben wurde, sonst gibt sie \texttt{False} aus.
+
+\begin{verbatim}
+Eingabe:
+Node(4, None, Node(2), Node(6))
+
+Ausgabe:
+True
+
+
+Eingabe:
+Node(3, None, Node(2,None, Node(1), Node(4)), Node(5))
+
+Ausgabe:
+False
+\end{verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Check if a given binary tree is a binary search tree. \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{isbin} \PY{o}{=} \PY{n}{node} \PY{o+ow}{is} \PY{o+ow}{not} \PY{k+kc}{None}
+    
+    \PY{k}{if} \PY{n}{node}\PY{o}{.}\PY{n}{right} \PY{o+ow}{and} \PY{n}{isbin}\PY{p}{:}
+        \PY{n}{isbin} \PY{o}{=} \PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{o}{.}\PY{n}{key} \PY{o}{\PYZgt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{)}
+    
+    \PY{k}{if} \PY{n}{node}\PY{o}{.}\PY{n}{left} \PY{o+ow}{and} \PY{n}{isbin}\PY{p}{:}
+        \PY{n}{isbin} \PY{o}{=} \PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{o}{.}\PY{n}{key} \PY{o}{\PYZlt{}} \PY{n}{node}\PY{o}{.}\PY{n}{key} \PY{o+ow}{and} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{)} 
+    
+    \PY{k}{return} \PY{n}{isbin} 
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{b-tests}{%
+\subsection{b) Tests}\label{b-tests}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} unittests}
+\PY{n}{valid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{asd}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{234}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cde}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{valid\PYZus{}bst}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{invalid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{kve}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{esi}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{agg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dnf}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{k+kc}{False}\PY{p}{,} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{c-bin_tree_2_list---3p.}{%
+\subsection{c) bin\_tree\_2\_list() -
+3P.}\label{c-bin_tree_2_list---3p.}}
+
+Implementieren Sie die Funktion \texttt{bin\_tree\_2\_list()}, die einen
+BT \texttt{node} erhält und eine Liste zurückgibt. Diese Liste enthält
+Tupel von Schlüsseln und Werten als Elemente, die jeweils die Nodes des
+BT in Inorder-Traversal beschreiben.
+
+\begin{verbatim}
+Eingabe:
+Node(4, 421, Node(2, 123, Node(1, "asd"), Node(3, None, right=Node(3, "vwa"))), Node(6, 234, Node(5, "abc"), Node(7, "abv", right=Node(8, "cde"))))
+
+Ausgabe:
+[(1, 'asd'), (2, 123), (3, None), (3, 'vwa'), (4, 421), (5, 'abc'), (6, 234), (7, 'abv'), (8, 'cde')]
+
+
+Eingabe:
+Node(1, 421, Node(2, "kve", Node(4, "abc", Node(0, "esi"))), Node(9, "agg", right=Node(4, "dnf", Node(2, 123))))
+
+Ausgabe:
+[(0, 'esi'), (4, 'abc'), (2, 'kve'), (1, 421), (9, 'agg'), (2, 123), (4, 'dnf')]
+\end{verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Convert keys \PYZam{} values of a binary tree into a list. \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{match}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+        \PY{n}{case} \PY{k+kc}{None}\PY{p}{:}
+            \PY{k}{return} \PY{p}{[}\PY{p}{]}
+        \PY{k}{case} \PY{k}{\PYZus{}}\PY{p}{:}
+            \PY{k}{return} \PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{left}\PY{p}{)} \PY{o}{+} \PY{p}{[}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{key}\PY{p}{,} \PY{n}{node}\PY{o}{.}\PY{n}{value}\PY{p}{)}\PY{p}{]} \PY{o}{+} \PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{node}\PY{o}{.}\PY{n}{right}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{c-tests}{%
+\subsection{c) Tests}\label{c-tests}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{valid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{asd}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{k+kc}{None}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{vwa}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{234}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cde}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{p}{[}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{asd}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{k+kc}{None}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{vwa}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{234}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cde}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{,}
+             \PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{valid\PYZus{}bst}\PY{p}{)}\PY{p}{)}
+
+
+\PY{n}{invalid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{kve}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{esi}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{agg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dnf}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{p}{[}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{esi}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{kve}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{agg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dnf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{,}
+             \PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{d-list_2_bin_tree---3p.}{%
+\subsection{d) list\_2\_bin\_tree() -
+3P.}\label{d-list_2_bin_tree---3p.}}
+
+Implementiere Sie die Funktion \texttt{list\_2\_bin\_tree()}, die als
+Parameter einen BT \texttt{node} und eine Liste \texttt{node\_list}
+übergegeben bekommt. Hierbei werden die Tupel aus Schlüssel und Wert aus
+der Liste \texttt{node\_list} mit Inorder-Traversal in den BT
+eingesetzt.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{list\PYZus{}2\PYZus{}bin\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{,} \PY{n}{node\PYZus{}list}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Convert keys \PYZam{} values from a list into a binary tree. \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{curr} \PY{o}{=} \PY{n}{node}
+    \PY{n}{in\PYZus{}order\PYZus{}stack} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+    \PY{k}{while} \PY{k+kc}{True}\PY{p}{:}
+        \PY{k}{if} \PY{n}{curr} \PY{o+ow}{is} \PY{o+ow}{not} \PY{k+kc}{None}\PY{p}{:}
+            \PY{n}{in\PYZus{}order\PYZus{}stack}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{curr}\PY{p}{)}
+            \PY{n}{curr} \PY{o}{=} \PY{n}{curr}\PY{o}{.}\PY{n}{left}
+        \PY{k}{elif}\PY{p}{(}\PY{n}{in\PYZus{}order\PYZus{}stack}\PY{p}{)}\PY{p}{:}
+            \PY{n}{curr} \PY{o}{=} \PY{n}{in\PYZus{}order\PYZus{}stack}\PY{o}{.}\PY{n}{pop}\PY{p}{(}\PY{p}{)}
+            \PY{n}{curr}\PY{o}{.}\PY{n}{key} \PY{o}{=} \PY{n}{node\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{curr}\PY{o}{.}\PY{n}{value} \PY{o}{=} \PY{n}{node\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+            \PY{n}{i} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+            \PY{n}{curr} \PY{o}{=} \PY{n}{curr}\PY{o}{.}\PY{n}{right}
+        \PY{k}{else}\PY{p}{:}
+            \PY{k}{break}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{d-tests}{%
+\subsection{d) Tests}\label{d-tests}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{tree} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{list} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{asd}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{k+kc}{None}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{vwa}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{234}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cde}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}
+\PY{n}{list\PYZus{}2\PYZus{}bin\PYZus{}tree}\PY{p}{(}\PY{n}{tree}\PY{p}{,} \PY{n+nb}{list}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{tree}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{(((None, 1|asd, None), 2|123, (None, 3|None, None)), 3|vwa, ((None, 4|421, None), 5|abc, ((None, 6|234, None), 7|abv, None)))}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{tree} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{list} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{esi}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{abc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{kve}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{agg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dnf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}
+\PY{n}{list\PYZus{}2\PYZus{}bin\PYZus{}tree}\PY{p}{(}\PY{n}{tree}\PY{p}{,} \PY{n+nb}{list}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{tree}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{(((((((None, 0|esi, None), 4|abc, None), 2|kve, None), 1|421, None), 9|agg, None), 2|123, None), 4|dnf, None)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{e-bin_tree_2_bin_search_tree---4p.}{%
+\subsection{e) bin\_tree\_2\_bin\_search\_tree() -
+4P.}\label{e-bin_tree_2_bin_search_tree---4p.}}
+
+Implementieren Sie die Funktion
+\texttt{bin\_tree\_2\_bin\_search\_tree()}, die überprüft ob ein
+übergebener BT \texttt{node} auch ein BST ist und falls dies nicht der
+Fall ist, diesen in einen BST überführt. Hierbei soll die ursprüngliche
+Form (Verzweigungen) des BT erhalten bleiben. Nutzen Sie bei der Lösung
+dieser Aufgabe, die von Ihnen zuvor implementierten Funktionen. Sie
+können davon ausgehen, dass wir als Eingabe nur valide BT verwenden, die
+z.B. keine doppelten Nodes besitzen.
+
+Hinweis: Da der Fokus dieser Aufgabe nicht auf den Sortieralgorithmen
+selbst liegt, dürfen Sie Funktionen wie \texttt{sort()} oder
+\texttt{sorted()} in Ihrer Lösung verwenden.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{bin\PYZus{}tree\PYZus{}2\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Convert a binary tree into a binary search tree. Preserves the original structure of the binary tree. \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{if} \PY{o+ow}{not} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+        \PY{n}{nodelist} \PY{o}{=} \PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}list}\PY{p}{(}\PY{n}{node}\PY{p}{)}
+        \PY{n}{nodelist}\PY{o}{.}\PY{n}{sort}\PY{p}{(}\PY{p}{)}
+        \PY{n}{list\PYZus{}2\PYZus{}bin\PYZus{}tree}\PY{p}{(}\PY{n}{node}\PY{p}{,} \PY{n}{nodelist}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{e-tests}{%
+\subsection{e) Tests}\label{e-tests}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{invalid\PYZus{}bst} \PY{o}{=} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{421}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{kve}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abc}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{esi}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{9}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{agg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{right}\PY{o}{=}\PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dnf}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{Node}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{123}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{bin\PYZus{}tree\PYZus{}2\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}
+\PY{n}{assert\PYZus{}equal}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{is\PYZus{}bin\PYZus{}search\PYZus{}tree}\PY{p}{(}\PY{p}{(}\PY{n}{invalid\PYZus{}bst}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} hidden tests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{jupyter-notebook-stolperfalle}{%
+\subsection{Jupyter Notebook
+Stolperfalle}\label{jupyter-notebook-stolperfalle}}
+
+Bei der Benutzung von Jupyter Notebooks, wird der globale Zustand aller
+Variablen zwischen der Ausführung von verschiedenen Zellen erhalten.
+Dies ist auch der Fall, wenn Zellen gelöscht oder hinzugefügt werden. Um
+sicher zu gehen, dass nicht ausversehen notwendige Variablen
+überschrieben oder gelöscht wurden, kann der Befehl
+\texttt{Kernel\ -\textgreater{}\ Restart\ \&\ Run\ All} ausgeführt
+werden.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
